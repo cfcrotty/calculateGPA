@@ -10,6 +10,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import API from "./utils/API";
 import "react-table/react-table.css";
+import isURL from 'is-url';
 
 const yearNow = moment().format("YYYY");
 
@@ -17,16 +18,11 @@ class App extends Component {
   state = {
     students: [],
     columns: [],
-    data: [],
     loadingText: false,
-    locations: [],
-    selectList: [],
     pageSize: 10,
-    match: true,
     filtered: [],
     highest: 0,
     lowest: 4,
-    selected: -1,
     newName: "",
     newGender: "M",
     newBirthday: "",
@@ -51,12 +47,30 @@ class App extends Component {
   }
 
   /**
+   * Function to validate URL
+   * @param {*} str 
+   */
+  validURL(str) {
+    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    return !!pattern.test(str);
+  }
+
+  /**
    * Funtion to add student
    */
   addStudent = (event) => {
     event.preventDefault();
     let newStudents = {};
     if (isNaN(this.state.newName) && this.state.newName && this.state.newGender && this.state.newBirthday && this.state.newGrade && this.state.newImage && this.state.newMath && this.state.newHistory && this.state.newScience && this.state.newEnglish) {
+      if (!isURL(this.state.newImage)) {
+        alert("Please enter a valid image url and make sure it starts with http:// or https://");
+        return;
+      }
       newStudents._id = this.state.id + 1;
       newStudents.name = this.state.newName;
       newStudents.grades = ["Math - " + this.state.newMath, "History - " + this.state.newHistory, "Science - " + this.state.newScience, "English - " + this.state.newEnglish];
@@ -184,6 +198,9 @@ class App extends Component {
     this.setState({ students: newState, highest, lowest });
   }
 
+  /**
+   * Functio that generates data used for React table
+   */
   generateColumns = () => {
     this.setState({
       columns: [{
@@ -250,14 +267,15 @@ class App extends Component {
     })
   }
 
+  /**
+   * Function called after page is rendered
+   */
   componentDidMount() {
-    API
-      .getAllStudents()
+    API.getAllStudents()
       .then(res => {
         this.setState({ students: res.data })
         this.generateData();
-      }
-      )
+      })
       .catch(err => console.log(err));
   }
 
