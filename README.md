@@ -1,9 +1,9 @@
 # calculateGPA
 RipeMetrics coding challenge using React.js to calculate students GPA
 
-You can add, delete and view students that calculates GPA. This application Node.js with React, Bootstrap, HTML, and CSS that is deployed in Heroku.
+User can add, delete and view students list with calculated GPA. This application uses Javascipt, with Node.js and React, HTML, and CSS.
 
-![Sample Page](public/assets/images/sample.png)
+![Sample Page](public/assets/images/sample.jpg)
 
 - - -
 
