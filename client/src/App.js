@@ -12,10 +12,12 @@ import API from "./utils/API";
 import "react-table/react-table.css";
 import isURL from 'is-url';
 
+// import ToggleForm from "./ToggleForm";
 import { connect } from 'react-redux';
-import { toggleForm } from './redux';
+import { toggleForm, store } from './redux';
 
 const yearNow = moment().format("YYYY");
+var state1 = store.getState();
 
 class App extends Component {
   constructor(props) {
@@ -39,7 +41,8 @@ class App extends Component {
       newEnglish: "A",
       newAthlete: false,
       id: 0,
-      isHidden: true
+      isHidden: true,
+      checkHidden: false
     };
   }
 
@@ -286,6 +289,10 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
+  myCallback = (dataFromChild) => {
+    this.setState({ checkHidden: dataFromChild });
+  }
+
   render() {
     // if (Object.entries(this.state.columns).length === 0) this.generateColumns();
     return (
@@ -293,13 +300,15 @@ class App extends Component {
         <Header h1="Students" h2=""></Header>
         <div className="">
           <div className="showHideAddTable">
-            <button name="Add" className="btn btn-primary" onClick={() => {
-              if (this.props.form.title) this.props.toggleForm({})
+          <button name="Add" className="btn btn-primary" onClick={() => {
+              if (state1.form.title) this.props.toggleForm({})
               else this.props.toggleForm({ title: "Yes" })
-            }}>{this.props.form.title ? "Hide Student Form" : "Show Student Form"}</button>
-            {/* <button name="Add" className="btn btn-primary" onClick={this.toggleHidden.bind(this)}>{this.state.isHidden ? "Show Student Form" : "Hide Student Form"}</button> */}
+              state1 = store.getState();
+            }}>{state1.form.title ? "Hide Student Form" : "Show Student Form"}</button>
+          {/* <button name="Add" className="btn btn-primary" onClick={this.toggleHidden.bind(this)}>{this.state.isHidden ? "Show Student Form" : "Hide Student Form"}</button> */}
           </div>
-          {this.props.form.title &&
+          {/* <ToggleForm callbackFromParent={this.myCallback} /> */}
+          {state1.form.title &&
             <div className="addTable">
               <table className="table">
                 <tbody>
