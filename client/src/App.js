@@ -12,30 +12,36 @@ import API from "./utils/API";
 import "react-table/react-table.css";
 import isURL from 'is-url';
 
+import { connect } from 'react-redux';
+import { toggleForm } from './redux';
+
 const yearNow = moment().format("YYYY");
 
 class App extends Component {
-  state = {
-    students: [],
-    columns: [],
-    loadingText: false,
-    pageSize: 10,
-    filtered: [],
-    highest: 0,
-    lowest: 4,
-    newName: "",
-    newGender: "M",
-    newBirthday: "",
-    newGrade: "1",
-    newImage: "https://i.pravatar.cc/100",
-    newMath: "A",
-    newHistory: "A",
-    newScience: "A",
-    newEnglish: "A",
-    newAthlete: false,
-    id: 0,
-    isHidden: true
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      students: [],
+      columns: [],
+      loadingText: false,
+      pageSize: 10,
+      filtered: [],
+      highest: 0,
+      lowest: 4,
+      newName: "",
+      newGender: "M",
+      newBirthday: "",
+      newGrade: "1",
+      newImage: "https://i.pravatar.cc/100",
+      newMath: "A",
+      newHistory: "A",
+      newScience: "A",
+      newEnglish: "A",
+      newAthlete: false,
+      id: 0,
+      isHidden: true
+    };
+  }
 
   /**
    * function to toggle Show/Hide Student Form
@@ -157,6 +163,7 @@ class App extends Component {
    * Function to to generate and process data on student table 
    */
   generateData = () => {
+    if (Object.entries(this.state.columns).length === 0) this.generateColumns();
     let data = this.state.students.data;
     let newState = { data: [] };
     let lowest = 4, highest = 0;
@@ -280,15 +287,19 @@ class App extends Component {
   }
 
   render() {
-    if (Object.entries(this.state.columns).length === 0) this.generateColumns();
+    // if (Object.entries(this.state.columns).length === 0) this.generateColumns();
     return (
       <Wrapper>
         <Header h1="Students" h2=""></Header>
         <div className="">
           <div className="showHideAddTable">
-            <button name="Add" className="btn btn-primary" onClick={this.toggleHidden.bind(this)}>{this.state.isHidden ? "Show Student Form" : "Hide Student Form"}</button>
+            <button name="Add" className="btn btn-primary" onClick={() => {
+              if (this.props.form.title) this.props.toggleForm({})
+              else this.props.toggleForm({ title: "Yes" })
+            }}>{this.props.form.title ? "Hide Student Form" : "Show Student Form"}</button>
+            {/* <button name="Add" className="btn btn-primary" onClick={this.toggleHidden.bind(this)}>{this.state.isHidden ? "Show Student Form" : "Hide Student Form"}</button> */}
           </div>
-          {!this.state.isHidden &&
+          {this.props.form.title &&
             <div className="addTable">
               <table className="table">
                 <tbody>
@@ -510,4 +521,17 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  form: state.form,
+});
+
+const mapDispatchToProps = {
+  toggleForm
+};
+
+const AppContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
+
+export default AppContainer;
