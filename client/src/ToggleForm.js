@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { toggleForm } from './redux';
+import { toggleForm, store } from './redux';
 import { connect } from "react-redux";
+var state1 = store.getState();
 
 class Form extends Component {
   constructor(props) {
@@ -9,7 +10,7 @@ class Form extends Component {
       showHide: false
     }
   }
-  
+
   someFn = (val) => {
     this.props.callbackFromParent(val);
   }
@@ -22,22 +23,24 @@ class Form extends Component {
     return (
       <div className="showHideAddTable">
         <button name="Add" className="btn btn-primary" onClick={() => {
-          this.someFn(this.props.form.title);
-          if (this.props.form.title) this.props.toggleForm({})
-          else this.props.toggleForm({ title: "Yes" })
-        }} >{this.props.form.title ? "Hide Student Form" : "Show Student Form"}</button>
+          state1 = store.getState();
+          //this.someFn(this.props.form.title);
+          if (state1.form && state1.form.title) store.dispatch(toggleForm({}))
+          else store.dispatch(toggleForm({ title: "Yes" }))
+
+        }} >{state1.form && state1.form.title ? "Hide Student Form" : "Show Student Form"}</button>
       </div>
     )
   }
 }
 
 const mapStateToProps = state => ({
-  form: state.form,
+  form: state.form
 });
 
-const mapDispatchToProps = {
-  toggleForm
-};
+const mapDispatchToProps = dispatch => ({
+  toggleForm: (dt) => dispatch(toggleForm(dt))
+});
 
 const ToggleForm = connect(
   mapStateToProps,

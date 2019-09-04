@@ -12,7 +12,7 @@ import API from "./utils/API";
 import "react-table/react-table.css";
 import isURL from 'is-url';
 
-// import ToggleForm from "./ToggleForm";
+import ToggleForm from "./ToggleForm";
 import { connect } from 'react-redux';
 import { toggleForm, store } from './redux';
 
@@ -75,7 +75,7 @@ class App extends Component {
   addStudent = (event) => {
     event.preventDefault();
     let newStudents = {};
-    if (isNaN(this.state.newName) && this.state.newName && this.state.newGender && this.state.newBirthday && this.state.newGrade && this.state.newImage && this.state.newMath && this.state.newHistory && this.state.newScience && this.state.newEnglish) {
+    if (isNaN(this.state.newName) && this.state.newName && this.state.newName.length > 1 && this.state.newGender && this.state.newBirthday && this.state.newGrade && this.state.newImage && this.state.newMath && this.state.newHistory && this.state.newScience && this.state.newEnglish) {
       if (!isURL(this.state.newImage)) {
         alert("Please enter a valid image url and make sure it starts with http:// or https://");
         return;
@@ -114,7 +114,7 @@ class App extends Component {
           alert(`There was an error adding a new student. Please try again.`);
         });
     } else {
-      alert("Please fill up all fields in student form properly. Make sure the name is not a number and the image url is working.");
+      alert("Please fill up all fields in student form properly. Make sure the name is not a number and has more than 1 character.");
     }
   }
 
@@ -289,6 +289,9 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
+  /**
+   * Function to get data from child
+   */
   myCallback = (dataFromChild) => {
     this.setState({ checkHidden: dataFromChild });
   }
@@ -300,15 +303,16 @@ class App extends Component {
         <Header h1="Students" h2=""></Header>
         <div className="">
           <div className="showHideAddTable">
-          <button name="Add" className="btn btn-primary" onClick={() => {
-              if (state1.form.title) this.props.toggleForm({})
-              else this.props.toggleForm({ title: "Yes" })
+            <button name="Add" className="btn btn-primary" onClick={() => {
+              //this.someFn(this.props.form.title);
+              if (state1.form && state1.form.title) store.dispatch(toggleForm({}))
+              else store.dispatch(toggleForm({ title: "Yes" }))
               state1 = store.getState();
-            }}>{state1.form.title ? "Hide Student Form" : "Show Student Form"}</button>
-          {/* <button name="Add" className="btn btn-primary" onClick={this.toggleHidden.bind(this)}>{this.state.isHidden ? "Show Student Form" : "Hide Student Form"}</button> */}
+            }} >{state1.form && state1.form.title ? "Hide Student Form" : "Show Student Form"}</button>
+            {/* <button name="Add" className="btn btn-primary" onClick={this.toggleHidden.bind(this)}>{this.state.isHidden ? "Show Student Form" : "Hide Student Form"}</button> */}
           </div>
-          {/* <ToggleForm callbackFromParent={this.myCallback} /> */}
-          {state1.form.title &&
+          {/* <ToggleForm callbackFromParent={this.myCallback} onclick={() => { state1 = store.getState() }} /> */}
+          {state1.form && state1.form.title &&
             <div className="addTable">
               <table className="table">
                 <tbody>
@@ -450,7 +454,6 @@ class App extends Component {
               loadingText={'Loading...'}
               noDataText={'No rows found'}
               defaultFilterMethod={(filter, row) => {
-                // console.log(filter.id);
                 if (filter.id === 'name' || filter.id === 'math' || filter.id === 'history' || filter.id === 'english' || filter.id === 'science') {
                   return String(row[filter.id]).toLowerCase().includes(String(filter.value).toLowerCase())
                 } else {
