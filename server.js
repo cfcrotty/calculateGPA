@@ -22,10 +22,10 @@ app.get("/api/students", (req, res) => {
 //route to add new student in students.json
 app.post("/api/new", (req, res) => {
   let student = req.body;
-  fs.readFile('./models/students.json', 'utf-8', function(err, data) {
+  fs.readFile(__dirname+'/models/students.json', 'utf-8', function(err, data) {
     data = JSON.parse(data);
     data.data.push(student);
-    fs.writeFile('./models/students.json', JSON.stringify(data), function() {
+    fs.writeFile(__dirname+'/models/students.json', JSON.stringify(data), function() {
       if (err) {
         console.log(err);
         res.status(422).json(err);
@@ -37,13 +37,13 @@ app.post("/api/new", (req, res) => {
 //route to delete a student in students.json
 app.post("/api/delete", (req, res) => {
   let student = req.body;
-  fs.readFile('./models/students.json', 'utf-8', function(err, data) {
+  fs.readFile(__dirname+'/models/students.json', 'utf-8', function(err, data) {
     data = JSON.parse(data);
     let newStudents = {data:[]}; 
     data.data.forEach(dt=>{
       if(student._id !== dt._id) newStudents.data.push(dt);
     })
-    fs.writeFile('./models/students.json', JSON.stringify(newStudents), function() {
+    fs.writeFile(__dirname+'/models/students.json', JSON.stringify(newStudents), function() {
       if (err) {
         console.log(err);
         res.status(422).json(err);
